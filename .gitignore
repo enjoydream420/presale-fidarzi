@@ -3,11 +3,16 @@ node_modules
 dist
 dist-ssr
 *.local
-.vscode
-out
+
+node_modules
+.env
+
+#Hardhat files
+cache
+artifacts
+
+coverage
+.eslintcache
+.openzeppelin/*.json
+
 .next
-yarn-error.log
-.env*
-package-lock.json
-yarn.lock
-.scannerwork

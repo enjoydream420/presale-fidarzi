@@ -1,134 +1,95 @@
-import React, { useEffect } from 'react';
-import { createStyles, Container, Text, Button, Group, useMantineTheme } from '@mantine/core';
-import MainLayout from '@/components/Layout';
-import { useTranslation } from 'react-i18next';
-import { useStore } from '../store';
-import { LanguageSwitch } from '@/components/LanguageSwitch';
-import { helper } from '@/lib/helper';
-import { WagmiProvider } from '@/components/WagmiProvider';
+import { Web3ReactProvider } from "@web3-react/core";
+import { useEffect } from "react";
 
-const BREAKPOINT = '@media (max-width: 755px)';
+import Demo, { getLibrary } from "../components/Demo";
+import useLocalStorage from "../hooks/useLocalStorage";
 
-const useStyles = createStyles((theme) => ({
-  wrapper: {
-    position: 'relative',
-    boxSizing: 'border-box',
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white
-  },
-
-  inner: {
-    position: 'relative',
-    paddingTop: 200,
-    paddingBottom: 120,
-
-    [BREAKPOINT]: {
-      paddingBottom: 80,
-      paddingTop: 80
-    }
-  },
-
-  title: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-    fontSize: 62,
-    fontWeight: 900,
-    lineHeight: 1.1,
-    margin: 0,
-    padding: 0,
-    color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-
-    [BREAKPOINT]: {
-      fontSize: 42,
-      lineHeight: 1.2
-    }
-  },
-
-  description: {
-    marginTop: theme.spacing.xl,
-    fontSize: 24,
-
-    [BREAKPOINT]: {
-      fontSize: 18
-    }
-  },
-
-  controls: {
-    marginTop: theme.spacing.xl * 2,
-
-    [BREAKPOINT]: {
-      marginTop: theme.spacing.xl
-    }
-  },
-
-  control: {
-    height: 54,
-    paddingLeft: 38,
-    paddingRight: 38,
-
-    [BREAKPOINT]: {
-      height: 54,
-      paddingLeft: 18,
-      paddingRight: 18,
-      flex: 1
-    }
-  },
-
-  githubControl: {
-    borderWidth: 2,
-    borderColor: theme.colorScheme === 'dark' ? 'transparent' : theme.colors.dark[9],
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : 'transparent',
-
-    '&:hover': {
-      backgroundColor: `${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0]} !important`
-    }
-  }
-}));
-
-export default function HeroTitle() {
-  const { user, god } = useStore();
-  const { classes, cx } = useStyles();
-  const theme = useMantineTheme();
-  const { t } = useTranslation();
+const App = function () {
+  const [theme, setTheme] = useLocalStorage<"dark" | "light">("theme", "dark");
 
   useEffect(() => {
-    user.enableNetworkChecker(window?.location?.pathname, Object.keys(god.network.chain.map).map(i=>Number(i)));
+    document.documentElement.setAttribute("data-theme", theme);
   }, []);
 
+  const toggleTheme = () => {
+    setTheme((prevTheme) => {
+      document.documentElement.setAttribute("data-theme", prevTheme === "dark" ? "light" : "dark");
+      return prevTheme === "dark" ? "light" : "dark";
+    });
+  };
   return (
-    <MainLayout>
-      <div className={classes.wrapper}>
-        <Container size={700} className={classes.inner}>
-          <h1 className={classes.title}>
-            {t('a')}{' '}
-            <Text component="span" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }} inherit>
-              {t('next-generation')}
-            </Text>{' '}
-            {t('dapp-dev-framework')}
-          </h1>
-
-          <Text className={classes.description} color="dimmed">
-            {t('tip')}
-          </Text>
-
-          <Group className={classes.controls}>
-            <Button size="xl" className={classes.control} variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
-              {t('get-started')}
-            </Button>
-
-            <Button
-              component="a"
-              href="https://github.com/iotexproject/iotex-dapp-sample"
-              size="xl"
-              variant="outline"
-              className={cx(classes.control, classes.githubControl)}
-              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-            >
-              GITHUB
-            </Button>
-
-            <LanguageSwitch></LanguageSwitch>
-          </Group>
-        </Container>
+    <>
+      <div className="fixed top-0 right-0 mt-2 mr-4">
+        <button type="button" onClick={toggleTheme} className="btn">
+          {theme === "dark" ? "🌞" : "🌙"}
+        </button>
       </div>
-    </MainLayout>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <div className="container mx-auto min-h-screen">
+          <Demo />
+          <div className="hero">
+            <div className="text-center hero-content">
+              <div className="py-8 px-4 max-w-md">
+                <figure className="mb-5">
+                  <img src="/logo.png" alt="logo" className="mask mask-squircle" />
+                </figure>
+                <h1 className="mb-5 text-5xl font-bold">Hello Dapp Starter</h1>
+                <p className="mb-5">
+                  Edit <code>pages/index.tsx</code> and save to test HMR updates.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer className="p-10 footer bg-base-200 text-base-content">
+          <div>
+            <p>
+              ProductsWay
+              <br />
+              Built with love from{" "}
+              <a className="link" href="https://github.com/jellydn">
+                jellydn
+              </a>
+            </p>
+          </div>
+          <div>
+            <span className="footer-title">Document</span>
+            <a
+              href="https://nextjs.org/docs/getting-started"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              Nextjs Docs
+            </a>
+            <a href="https://hardhat.org/" target="_blank" rel="noopener noreferrer" className="link link-hover">
+              Hardhat
+            </a>
+            <a href="https://daisyui.com/" target="_blank" rel="noopener noreferrer" className="link link-hover">
+              daisyUI
+            </a>
+            <a
+              href="https://github.com/NoahZinsmeister/web3-react"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              Web3 React
+            </a>
+          </div>
+          <div>
+            <span className="footer-title">1-click Deployment</span>
+            <a
+              className="pl-2"
+              href="https://vercel.com/new/git/external?repository-url=https://github.com/jellydn/dapp-starter/"
+            >
+              <img src="https://vercel.com/button" alt="Deploy with Vercel" />
+            </a>
+          </div>
+        </footer>
+      </Web3ReactProvider>
+    </>
   );
-}
+};
+
+export default App;
